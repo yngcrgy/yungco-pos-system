@@ -3,6 +3,7 @@ from .models import Product, Transaction, TransactionItem
 from .forms import ProductForm, TransactionItemForm
 from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import Sum
 
 def home(request):
     products = Product.objects.all()
@@ -54,3 +55,19 @@ def delete_product(request, pk):
         product.delete()
         return redirect('home')
     return render(request, 'pos_app/delete_product.html', {'product': product})
+
+def transaction_history(request):
+    transactions = Transaction.objects.all().order_by('-date')
+    total_sales = transactions.aggregate(Sum('total'))['total__sum'] or 0
+    return render(request, 'pos_app/transaction_history.html', {
+        'transactions': transactions,
+        'total_sales': total_sales
+    })
+
+def transaction_detail(request, pk):
+    transaction = Transaction.objects.get(pk=pk)
+    items = TransactionItem.objects.filter(transaction=transaction)
+    return render(request, 'pos_app/transaction_detail.html', {
+        'transaction': transaction,
+        'items': items
+    })
