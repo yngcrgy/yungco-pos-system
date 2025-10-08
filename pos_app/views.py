@@ -1,14 +1,17 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, Transaction, TransactionItem
 from .forms import ProductForm, TransactionItemForm
 from django.utils import timezone
-from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Sum
+from django.contrib.auth.decorators import login_required
+
 
 def home(request):
     products = Product.objects.all()
     return render(request, 'pos_app/home.html', {'products': products})
 
+
+@login_required
 def add_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST)
@@ -19,6 +22,8 @@ def add_product(request):
         form = ProductForm()
     return render(request, 'pos_app/add_product.html', {'form': form})
 
+
+@login_required
 def process_transaction(request):
     if request.method == 'POST':
         form = TransactionItemForm(request.POST)
@@ -27,7 +32,6 @@ def process_transaction(request):
             item.subtotal = item.product.price * item.quantity
             item.save()
 
-            # create a transaction automatically
             Transaction.objects.create(
                 total=item.subtotal,
                 payment_method='Cash',
@@ -38,6 +42,8 @@ def process_transaction(request):
         form = TransactionItemForm()
     return render(request, 'pos_app/process_transaction.html', {'form': form})
 
+
+@login_required
 def edit_product(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == 'POST':
@@ -49,6 +55,8 @@ def edit_product(request, pk):
         form = ProductForm(instance=product)
     return render(request, 'pos_app/edit_product.html', {'form': form, 'product': product})
 
+
+@login_required
 def delete_product(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == 'POST':
@@ -56,6 +64,8 @@ def delete_product(request, pk):
         return redirect('home')
     return render(request, 'pos_app/delete_product.html', {'product': product})
 
+
+@login_required
 def transaction_history(request):
     transactions = Transaction.objects.all().order_by('-date')
     total_sales = transactions.aggregate(Sum('total'))['total__sum'] or 0
@@ -64,6 +74,8 @@ def transaction_history(request):
         'total_sales': total_sales
     })
 
+
+@login_required
 def transaction_detail(request, pk):
     transaction = Transaction.objects.get(pk=pk)
     items = TransactionItem.objects.filter(transaction=transaction)
