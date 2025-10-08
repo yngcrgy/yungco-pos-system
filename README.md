@@ -1,0 +1,28 @@
+# Django POS System
+A Point of Sale system built with Django featuring role-based access for admin, manager, 
+and teller users.
+
+## Features
+- User authentication with different roles
+- Admin user management
+- Manager product management and sales reports
+- Teller POS system with transaction processing
+- Responsive web interface
+
+## Installation
+1. Clone the repository
+2. Create virtual environment: `python3 -m venv env`
+3. Activate environment: `source env/bin/activate` (Linux/Mac) or `env\Scripts\activate` (Windows)
+4. Install requirements: `pip install -r requirements.txt`
+5. Run migrations: `python3 manage.py migrate`
+6. Create superuser: `python3 manage.py createsuperuser`
+7. Run server: `python3 manage.py runserver`
+
+## Technology Stack
+- Django
+- SQLite (can be configured for other databases)
+- HTML, CSS, JavaScript
+
+## Developer
+Yungco, Riggy Maryl L. – Project Developer  
+GitHub: [https://github.com/yngcrgy](https://github.com/yngcrgy)
