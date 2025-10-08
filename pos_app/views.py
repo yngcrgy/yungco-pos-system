@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from .models import Product, Transaction, TransactionItem
 from .forms import ProductForm, TransactionItemForm
 from django.utils import timezone
+from django.shortcuts import render, redirect, get_object_or_404
 
 def home(request):
     products = Product.objects.all()
@@ -35,3 +36,21 @@ def process_transaction(request):
     else:
         form = TransactionItemForm()
     return render(request, 'pos_app/process_transaction.html', {'form': form})
+
+def edit_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = ProductForm(instance=product)
+    return render(request, 'pos_app/edit_product.html', {'form': form, 'product': product})
+
+def delete_product(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        product.delete()
+        return redirect('home')
+    return render(request, 'pos_app/delete_product.html', {'product': product})
