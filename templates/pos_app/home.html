@@ -1,0 +1,10 @@
+<h1>Product List</h1>
+<ul>
+  {% for product in products %}
+    <li>{{ product.name }} - ₱{{ product.price }} ({{ product.stock }} pcs)</li>
+  {% empty %}
+    <li>No products yet.</li>
+  {% endfor %}
+</ul>
+<a href="{% url 'add_product' %}">Add Product</a> |
+<a href="{% url 'process_transaction' %}">New Transaction</a>
